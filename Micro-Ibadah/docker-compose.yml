@@ -1,0 +1,26 @@
+services:
+  server:
+    build:
+      context: ./server
+    container_name: micro-ibadah-server
+    env_file:
+      - ./server/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      CLIENT_URL: http://localhost:8080
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: /api
+    container_name: micro-ibadah-client
+    depends_on:
+      - server
+    ports:
+      - "8080:80"
+    restart: unless-stopped
