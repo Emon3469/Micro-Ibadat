@@ -85,6 +85,22 @@ docker compose down
 - Set `CLIENT_URL` on backend to your frontend domain.
 - Keep `MONGO_URI` only in platform environment variables.
 
+## Railway (Fix Railpack Build Plan Error)
+
+If Railway fails with a Railpack/Nixpacks build-plan error, deploy each service with Dockerfile mode:
+
+1. Create **two Railway services** from the same repo.
+2. For backend service, set **Root Directory** to `server`.
+3. For frontend service, set **Root Directory** to `client`.
+4. Ensure each service uses Dockerfile builder (configs included):
+	- `server/railway.toml`
+	- `client/railway.toml`
+5. Set backend env vars in Railway:
+	- `MONGO_URI`
+	- `CLIENT_URL` (your Railway frontend URL)
+
+This bypasses Railpack auto-detection and uses your working Docker setup directly.
+
 ## API Endpoints
 - `POST /api/auth/student`
 - `PUT /api/routines/:userId`
