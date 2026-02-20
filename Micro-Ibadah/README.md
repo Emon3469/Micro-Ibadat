@@ -87,21 +87,30 @@ docker compose down
 
 ## Railway (Fix Railpack Build Plan Error)
 
+Railway deployment has **two options**: Dockerfile (recommended) or Nixpacks fallback.
+
+### Option 1: Dockerfile (Recommended)
 If Railway fails with a Railpack/Nixpacks build-plan error, deploy each service with Dockerfile mode:
 
 1. Create **two Railway services** from the same repo.
 2. For backend service, set **Root Directory** to `server`.
 3. For frontend service, set **Root Directory** to `client`.
 4. Ensure each service uses Dockerfile builder (configs included):
-	- `server/railway.toml`
-	- `client/railway.toml`
+   - `server/railway.toml`
+   - `client/railway.toml`
 5. Set backend env vars in Railway:
-	- `MONGO_URI`
-	- `CLIENT_URL` (your Railway frontend URL)
+   - `MONGO_URI`
+   - `CLIENT_URL` (your Railway frontend URL)
 
 This bypasses Railpack auto-detection and uses your working Docker setup directly.
 
-## API Endpoints
+### Option 2: Nixpacks (Fallback)
+If Dockerfile option fails, Railway will auto-detect Nixpacks from included configs:
+
+- `server/nixpacks.toml` — runs `pm2-runtime ecosystem.config.cjs`
+- `client/nixpacks.toml` — runs `npm run start` (Vite preview mode)
+
+No additional config needed; Railway will find these files and build accordingly.
 - `POST /api/auth/student`
 - `PUT /api/routines/:userId`
 - `GET /api/routines/:userId`
