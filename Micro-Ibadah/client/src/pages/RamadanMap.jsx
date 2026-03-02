@@ -32,7 +32,22 @@ export default function RamadanMap() {
   const [dashData, setDashData] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isQadrMode, setIsQadrMode] = useState(false);
+  const [isQadrMode, setIsQadrMode] = useState(() => (localStorage.getItem("app_theme") || "ramadan") === "ramadan-night");
+
+  useEffect(() => {
+    const syncTheme = () => {
+      const activeTheme = localStorage.getItem("app_theme") || "ramadan";
+      setIsQadrMode(activeTheme === "ramadan-night");
+    };
+
+    window.addEventListener("storage", syncTheme);
+    window.addEventListener("app-theme-change", syncTheme);
+
+    return () => {
+      window.removeEventListener("storage", syncTheme);
+      window.removeEventListener("app-theme-change", syncTheme);
+    };
+  }, []);
 
   useEffect(() => {
     if (!user?._id) { setLoading(false); return; }
@@ -49,6 +64,16 @@ export default function RamadanMap() {
     ? "min-h-screen bg-linear-to-br from-slate-950 via-indigo-950 to-slate-950"
     : "min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50";
 
+  const handleQadrModeToggle = () => {
+    setIsQadrMode((previous) => {
+      const next = !previous;
+      const nextTheme = next ? "ramadan-night" : "ramadan";
+      localStorage.setItem("app_theme", nextTheme);
+      window.dispatchEvent(new Event("app-theme-change"));
+      return next;
+    });
+  };
+
   return (
     <div className={`${bgClass} py-6 px-4 transition-colors duration-700`}>
       <div className="max-w-2xl mx-auto space-y-6">
@@ -64,7 +89,7 @@ export default function RamadanMap() {
               </p>
             </div>
             <button
-              onClick={() => setIsQadrMode(!isQadrMode)}
+              onClick={handleQadrModeToggle}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 isQadrMode
                   ? "bg-indigo-500/30 border border-indigo-400/50 text-indigo-200 hover:bg-indigo-500/40"

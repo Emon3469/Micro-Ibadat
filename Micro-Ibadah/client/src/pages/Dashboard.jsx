@@ -27,6 +27,34 @@ const quranPresets = [
   { ayahsPerRead: 20, timesPerDay: 2 },
 ];
 
+const RAMADAN_VERSES = [
+  {
+    arabic: "شَهْرُ رَمَضَانَ الَّذِي أُنْزِلَ فِيهِ الْقُرْآنُ",
+    translation: "The month of Ramadan in which the Qur'an was revealed.",
+    reference: "Qur'an 2:185",
+  },
+  {
+    arabic: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",
+    translation: "Indeed, with hardship comes ease.",
+    reference: "Qur'an 94:6",
+  },
+  {
+    arabic: "وَذَكِّرْ فَإِنَّ الذِّكْرَىٰ تَنْفَعُ الْمُؤْمِنِينَ",
+    translation: "Remind, for indeed the reminder benefits the believers.",
+    reference: "Qur'an 51:55",
+  },
+  {
+    arabic: "إِنَّ مَعِيَ رَبِّي سَيَهْدِينِ",
+    translation: "Indeed, my Lord is with me; He will guide me.",
+    reference: "Qur'an 26:62",
+  },
+  {
+    arabic: "وَقُل رَّبِّ زِدْنِي عِلْمًا",
+    translation: "And say, My Lord, increase me in knowledge.",
+    reference: "Qur'an 20:114",
+  },
+];
+
 // Suhoor/Iftar Countdown
 function useCountdown(targetTimeStr) {
   const [timeLeft, setTimeLeft] = useState("");
@@ -126,6 +154,40 @@ function EidCard({ user, card }) {
   );
 }
 
+function RamadanVerseCard({ card }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const text = `🌙 Ramadan Verse Card\n\n${card?.arabic}\n${card?.translation}\n${card?.reference}\n\nDay ${card?.day} · ${card?.name}`;
+    if (navigator.share) {
+      await navigator.share({ text });
+    } else {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.45 }}>
+      <Card className="border-indigo-300 shadow-lg overflow-hidden" style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #0f172a 100%)" }}>
+        <CardContent className="pt-6 pb-6 text-center">
+          <p className="text-indigo-200 text-xs font-semibold uppercase tracking-widest mb-2">Ramadan Verse Card</p>
+          <p className="text-white text-2xl leading-loose mb-3" dir="rtl">{card?.arabic}</p>
+          <p className="text-indigo-100 text-sm mb-2">{card?.translation}</p>
+          <p className="text-indigo-300/80 text-xs mb-4">{card?.reference}</p>
+          <div className="rounded-xl bg-white/10 px-3 py-2 text-xs text-indigo-100 mb-4">
+            Day {card?.day} · {card?.name}
+          </div>
+          <Button onClick={handleShare} className="bg-indigo-300 hover:bg-indigo-200 text-indigo-900 font-semibold">
+            {copied ? "Copied! ✓" : "📤 Share Verse Card"}
+          </Button>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
 export default function Dashboard() {
   const { user: authUser } = useAuth();
   const [student, setStudent] = useState({
@@ -150,12 +212,17 @@ export default function Dashboard() {
   const [adminSettings, setAdminSettings] = useState(null);
   const [eidCardData, setEidCardData] = useState(null);
   const [eidGenerating, setEidGenerating] = useState(false);
+  const [ramadanVerseCard, setRamadanVerseCard] = useState(null);
   const currentUserId = currentUser?._id || currentUser?.id;
 
   const quranProgress = useMemo(() => {
     if (!quranPlan?.totalAyahsPerDay) return 0;
     return Math.min(100, Math.round((quranPlan.totalAyahsPerDay / 60) * 100));
   }, [quranPlan]);
+
+  const hasCompletedDay30 = useMemo(() => {
+    return (dashboard?.user?.taraweehDays || []).some((entry) => entry.day >= 30 && entry.logged);
+  }, [dashboard?.user?.taraweehDays]);
 
   useEffect(() => {
     const loadStatic = async () => {
@@ -197,10 +264,25 @@ export default function Dashboard() {
   }, [currentUserId]);
 
   useEffect(() => {
+    const taraweehDays = dashboard?.user?.taraweehDays || [];
+    if (taraweehDays.length === 0) return;
+
+    const completedDay30 = taraweehDays.some((entry) => entry.day >= 30 && entry.logged);
+    if (completedDay30) {
+      setCurrentRamadanDay(31);
+      return;
+    }
+
+    const highestLogged = taraweehDays
+      .filter((entry) => entry.logged)
+      .reduce((maxDay, entry) => Math.max(maxDay, entry.day || 0), 0);
+
+    setCurrentRamadanDay(Math.min(30, Math.max(1, highestLogged + 1)));
+  }, [dashboard?.user?.taraweehDays]);
+
+  useEffect(() => {
     const maybeGenerateEidCard = async () => {
-      if (!currentUserId || !dashboard?.user) return;
-      const completedDay30 = (dashboard.user.taraweehDays || []).some((entry) => entry.day >= 30 && entry.logged);
-      if (!completedDay30) return;
+      if (!currentUserId || !dashboard?.user || !hasCompletedDay30) return;
 
       try {
         const existing = await fetchEidCard(currentUserId);
@@ -219,7 +301,28 @@ export default function Dashboard() {
     };
 
     maybeGenerateEidCard();
-  }, [currentUserId, dashboard?.user?.taraweehDays]);
+  }, [currentUserId, dashboard?.user, hasCompletedDay30]);
+
+  const handleGenerateEidCard = async () => {
+    if (!currentUserId || !hasCompletedDay30) return;
+    try {
+      setEidGenerating(true);
+      const generated = await generateEidCard(currentUserId);
+      setEidCardData(generated.card);
+    } catch {
+    } finally {
+      setEidGenerating(false);
+    }
+  };
+
+  const handleGenerateRamadanVerseCard = () => {
+    const randomVerse = RAMADAN_VERSES[Math.floor(Math.random() * RAMADAN_VERSES.length)];
+    setRamadanVerseCard({
+      ...randomVerse,
+      day: Math.min(30, currentRamadanDay),
+      name: dashboard?.user?.nickname || dashboard?.user?.name || currentUser?.name || "Micro-Ibadah User",
+    });
+  };
 
   const handleRegister = async () => {
     setLoading(true);
@@ -289,6 +392,12 @@ export default function Dashboard() {
     const data = await logShawwal(currentUserId, day);
     setDashboard((prev) => prev ? { ...prev, user: { ...prev.user, shawwalDays: data.shawwalDays, hasanatPoints: data.hasanatPoints } } : prev);
   };
+
+  useEffect(() => {
+    if (hasCompletedDay30) {
+      setRamadanVerseCard(null);
+    }
+  }, [hasCompletedDay30]);
 
   const isNightTheme = isLast10Nights;
   const themeStyles = isNightTheme 
@@ -492,6 +601,17 @@ export default function Dashboard() {
                     })}
                   </div>
                 </div>
+
+                {!hasCompletedDay30 && (
+                  <div className="rounded-lg border border-indigo-200 bg-white/80 p-3">
+                    <p className="text-sm font-semibold text-indigo-800 mb-2">🌙 Beautiful Ramadan Verse Card</p>
+                    <Button onClick={handleGenerateRamadanVerseCard} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                      Generate Verse Card
+                    </Button>
+                  </div>
+                )}
+
+                {ramadanVerseCard && !hasCompletedDay30 && <RamadanVerseCard card={ramadanVerseCard} />}
               </CardContent>
             </Card>
           ) : (
@@ -504,6 +624,15 @@ export default function Dashboard() {
                 {eidGenerating && (
                   <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-2 text-xs text-yellow-700">
                     Generating your Eid card...
+                  </div>
+                )}
+
+                {!eidCardData && hasCompletedDay30 && !eidGenerating && (
+                  <div className="rounded-lg border border-teal-200 bg-white/80 p-3">
+                    <p className="text-sm font-semibold text-teal-800 mb-2">🎨 Personalized Eid Card Generator</p>
+                    <Button onClick={handleGenerateEidCard} className="w-full bg-teal-600 hover:bg-teal-700 text-white">
+                      Generate My Eid Card
+                    </Button>
                   </div>
                 )}
 

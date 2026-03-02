@@ -24,6 +24,10 @@ export default function Layout() {
     };
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   if (!user) return <Outlet />;
 
   const navItems = [
