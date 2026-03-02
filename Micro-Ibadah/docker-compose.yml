@@ -2,6 +2,7 @@ services:
   server:
     build:
       context: ./server
+      dockerfile: Dockerfile
     container_name: micro-ibadah-server
     env_file:
       - ./server/.env
@@ -16,6 +17,7 @@ services:
   client:
     build:
       context: ./client
+      dockerfile: Dockerfile
       args:
         VITE_API_URL: /api
     container_name: micro-ibadah-client
