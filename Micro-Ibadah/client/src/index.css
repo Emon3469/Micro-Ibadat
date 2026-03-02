@@ -157,3 +157,35 @@ body::after {
 #root {
   min-height: 100vh;
 }
+
+[data-theme="ramadan-night"] {
+  color-scheme: dark;
+}
+
+[data-theme="ramadan-night"] :is(.text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600, .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600) {
+  color: rgb(226 232 240) !important;
+}
+
+[data-theme="ramadan-night"] :is(.text-slate-500, .text-slate-400, .text-gray-500, .text-gray-400) {
+  color: rgb(148 163 184) !important;
+}
+
+[data-theme="ramadan-night"] ::placeholder {
+  color: rgb(148 163 184) !important;
+}
+
+[data-theme="ramadan-night"] :is(input, select, textarea) {
+  color: rgb(241 245 249) !important;
+  background-color: rgb(15 23 42 / 0.9) !important;
+  border-color: rgb(71 85 105) !important;
+}
+
+[data-theme="ramadan-night"] :is(input, select, textarea)::placeholder {
+  color: rgb(203 213 225) !important;
+  opacity: 1;
+}
+
+[data-theme="ramadan-night"] select option {
+  color: rgb(241 245 249);
+  background-color: rgb(15 23 42);
+}

@@ -146,7 +146,7 @@ export default function Dashboard() {
   const [reflectionText, setReflectionText] = useState("");
   const [reflectionSaved, setReflectionSaved] = useState(false);
   const [currentRamadanDay, setCurrentRamadanDay] = useState(1);
-  const [isLast10Nights, setIsLast10Nights] = useState(false);
+  const [isLast10Nights, setIsLast10Nights] = useState(() => (localStorage.getItem("app_theme") || "ramadan") === "ramadan-night");
   const [adminSettings, setAdminSettings] = useState(null);
   const [eidCardData, setEidCardData] = useState(null);
   const [eidGenerating, setEidGenerating] = useState(false);
@@ -292,11 +292,21 @@ export default function Dashboard() {
 
   const isNightTheme = isLast10Nights;
   const themeStyles = isNightTheme 
-    ? "bg-slate-900 min-h-screen text-slate-100 transition-colors duration-700" 
-    : "bg-base-50 min-h-screen transition-colors duration-700";
+    ? "min-h-screen text-slate-100 transition-colors duration-700" 
+    : "min-h-screen transition-colors duration-700";
+
+  const handleThemeToggle = () => {
+    setIsLast10Nights((previous) => {
+      const next = !previous;
+      const nextTheme = next ? "ramadan-night" : "ramadan";
+      localStorage.setItem("app_theme", nextTheme);
+      window.dispatchEvent(new Event("app-theme-change"));
+      return next;
+    });
+  };
 
   return (
-    <div data-theme={isNightTheme ? "dark" : "ramadan"} className={`${themeStyles} mx-auto w-full px-4 py-6 sm:px-6 lg:px-8`}>
+    <div className={`${themeStyles} mx-auto w-full px-4 py-6 sm:px-6 lg:px-8`}>
       <div className="max-w-7xl mx-auto">
       <motion.header
         initial={{ opacity: 0, y: 8 }}
@@ -317,7 +327,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 mr-4">
                 <span className={`text-xs font-semibold uppercase tracking-wider ${isNightTheme ? 'text-indigo-300' : 'text-slate-500'}`}>Last 10 Nights</span>
                 <button 
-                  onClick={() => setIsLast10Nights(!isLast10Nights)}
+                  onClick={handleThemeToggle}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isLast10Nights ? 'bg-indigo-500' : 'bg-slate-300'}`}
                 >
                   <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isLast10Nights ? 'translate-x-6' : 'translate-x-1'}`} />
