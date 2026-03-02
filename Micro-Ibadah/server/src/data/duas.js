@@ -29,6 +29,24 @@ const duas = [
     arabic: "سُبْحَانَ ٱللَّٰهِ وَبِحَمْدِهِ",
     meaning: "Glory be to Allah and praise be to Him.",
   },
+  {
+    id: "lazy",
+    category: "Feeling Lazy",
+    arabic: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ",
+    meaning: "O Allah, I seek refuge in You from incapacity and laziness.",
+  },
+  {
+    id: "mistake",
+    category: "Made a mistake",
+    arabic: "رَبَّنَا ظَلَمْنَا أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا",
+    meaning: "Our Lord, we have wronged ourselves, and if You do not forgive us and have mercy upon us, we will surely be among the losers.",
+  },
+  {
+    id: "grateful",
+    category: "Feeling Grateful",
+    arabic: "الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ",
+    meaning: "Praise be to Allah by Whose grace good deeds are completed.",
+  },
 ];
 
 module.exports = duas;
