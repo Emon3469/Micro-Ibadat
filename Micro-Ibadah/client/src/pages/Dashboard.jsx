@@ -421,8 +421,8 @@ export default function Dashboard() {
                 ))}
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <Input type="number" min={1} value={quranInput.ayahsPerRead} onChange={(event) => setQuranInput((prev) => ({ ...prev, ayahsPerRead: Number(event.target.value) }))} />
-                <Input type="number" min={1} value={quranInput.timesPerDay} onChange={(event) => setQuranInput((prev) => ({ ...prev, timesPerDay: Number(event.target.value) }))} />
+                <Input type="number" min={1} placeholder="Ayahs per read" value={quranInput.ayahsPerRead} onChange={(event) => setQuranInput((prev) => ({ ...prev, ayahsPerRead: Number(event.target.value) }))} />
+                <Input type="number" min={1} placeholder="Reads per day" value={quranInput.timesPerDay} onChange={(event) => setQuranInput((prev) => ({ ...prev, timesPerDay: Number(event.target.value) }))} />
                 <Button className="col-span-2" onClick={() => handleQuranCalc()}>Calculate Plan</Button>
               </div>
               <AnimatePresence>
