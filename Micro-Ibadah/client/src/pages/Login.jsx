@@ -39,10 +39,10 @@ export default function Login() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-100">{error}</div>}
+            {error && <div className="p-3 text-sm text-error bg-error/10 rounded-lg border border-error/30">{error}</div>}
             
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">University Email</label>
+              <label className="text-sm font-medium text-base-content">University Email</label>
               <Input 
                 type="email" 
                 required 
@@ -53,7 +53,7 @@ export default function Login() {
             </div>
             
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Password</label>
+              <label className="text-sm font-medium text-base-content">Password</label>
               <Input 
                 type="password" 
                 required 
@@ -66,7 +66,7 @@ export default function Login() {
             <Button type="submit" className="w-full h-11 font-semibold mt-2">Log In</Button>
           </form>
           
-          <div className="mt-6 text-center text-sm text-slate-500">
+          <div className="mt-6 text-center text-sm text-base-content/70">
             Don't have an account? <Link to="/register" className="text-primary font-semibold hover:underline">Register</Link>
           </div>
         </CardContent>

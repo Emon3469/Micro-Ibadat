@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { Target, Plus, Users, Zap, Trophy, ChevronRight, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -42,7 +42,7 @@ function ChallengeCard({ challenge, userId, onUpdate }) {
   };
 
   return (
-    <motion.div whileHover={{ y: -2 }} className={`rounded-xl border p-4 shadow-sm bg-white ${participant?.completed ? "border-green-200" : "border-gray-200"}`}>
+    <Motion.div whileHover={{ y: -2 }} className={`rounded-xl border p-4 shadow-sm bg-white ${participant?.completed ? "border-green-200" : "border-gray-200"}`}>
       <div className="flex items-start gap-3 mb-3">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
@@ -85,7 +85,7 @@ function ChallengeCard({ challenge, userId, onUpdate }) {
           </Button>
         )}
       </div>
-    </motion.div>
+    </Motion.div>
   );
 }
 
@@ -130,7 +130,7 @@ export default function Challenges() {
     <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-amber-50 py-6 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+        <Motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-amber-100">
@@ -149,12 +149,12 @@ export default function Challenges() {
               <Plus className="w-4 h-4 mr-1" /> Create
             </Button>
           </div>
-        </motion.div>
+        </Motion.div>
 
         {/* Create form */}
         <AnimatePresence>
           {showCreate && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+            <Motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
               <Card className="border-amber-200">
                 <CardHeader>
                   <CardTitle className="text-amber-800 text-sm">Create a New Challenge</CardTitle>
@@ -199,7 +199,7 @@ export default function Challenges() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
 

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { BookOpen, ChevronRight, Calculator, Target, TrendingUp, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -41,17 +41,17 @@ export default function Quran() {
   const [todayTotal, setTodayTotal] = useState(0);
   const [justLogged, setJustLogged] = useState(false);
 
-  const refreshTracker = async () => {
+  const refreshTracker = useCallback(async () => {
     if (!user?._id) return;
     const data = await fetchQuranTracker(user._id);
     setTrackerRows(data.entries || []);
     setTodayTotal(data.todayTotal || 0);
     setOverallTotal(data.overallTotal || 0);
-  };
+  }, [user?._id]);
 
   useEffect(() => {
     refreshTracker().catch(() => {});
-  }, [user?._id]);
+  }, [refreshTracker]);
 
   const handleCalculate = async (preset) => {
     const payload = preset || input;
@@ -82,7 +82,7 @@ export default function Quran() {
     <div className="min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-50 py-6 px-4">
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+        <Motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-xl bg-emerald-100">
               <BookOpen className="w-6 h-6 text-emerald-700" />
@@ -108,7 +108,7 @@ export default function Quran() {
               <p className="text-xs text-emerald-500 font-medium">Total logged</p>
             </div>
           </div>
-        </motion.div>
+        </Motion.div>
 
         {/* Tabs */}
         <div className="flex gap-2 p-1 bg-emerald-100 rounded-xl">
@@ -129,7 +129,7 @@ export default function Quran() {
 
         <AnimatePresence mode="wait">
           {activeTab === "calculator" && (
-            <motion.div key="calc" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="space-y-4">
+            <Motion.div key="calc" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="space-y-4">
               <Card className="border-emerald-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-emerald-800">
@@ -141,7 +141,7 @@ export default function Quran() {
                   {/* Presets */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {PRESETS.map((preset) => (
-                      <motion.button
+                      <Motion.button
                         key={preset.label}
                         whileTap={{ scale: 0.97 }}
                         onClick={() => handleCalculate(preset)}
@@ -149,7 +149,7 @@ export default function Quran() {
                       >
                         <p className="text-xs font-bold text-emerald-800">{preset.label}</p>
                         <p className="text-xs text-emerald-600 mt-0.5">{preset.ayahsPerRead} ayahs × {preset.timesPerDay}/day</p>
-                      </motion.button>
+                      </Motion.button>
                     ))}
                   </div>
 
@@ -173,7 +173,7 @@ export default function Quran() {
                   {/* Results */}
                   <AnimatePresence>
                     {plan && (
-                      <motion.div
+                      <Motion.div
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="rounded-xl border border-emerald-300 bg-linear-to-br from-emerald-50 to-teal-50 p-4 space-y-3"
@@ -189,16 +189,16 @@ export default function Quran() {
                         <p className="text-xs text-emerald-700 bg-white/60 rounded-lg p-2">
                           💡 At this pace you'll complete the Quran in <strong>{plan.daysToCompletion} days</strong>. {plan.daysToCompletion <= 30 ? "✨ Khatam before Eid!" : "Keep going — every ayah counts!"}
                         </p>
-                      </motion.div>
+                      </Motion.div>
                     )}
                   </AnimatePresence>
                 </CardContent>
               </Card>
-            </motion.div>
+            </Motion.div>
           )}
 
           {activeTab === "tracker" && (
-            <motion.div key="track" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-4">
+            <Motion.div key="track" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-4">
               <Card className="border-emerald-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-emerald-800">
@@ -209,27 +209,33 @@ export default function Quran() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 gap-2">
                     {SURAHS.map(surah => (
-                      <motion.button
+                      <Motion.button
                         key={surah.number}
+                        whileHover={{ y: -1 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedSurah(surah)}
                         className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${
                           selectedSurah?.number === surah.number
-                            ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-400"
-                            : "border-gray-200 bg-white hover:border-emerald-200 hover:bg-emerald-50/50"
+                            ? "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-300 shadow-sm"
+                            : "border-emerald-100 bg-white hover:border-emerald-300 hover:bg-emerald-50/70 hover:shadow-sm"
                         }`}
                       >
-                        <div>
-                          <p className="font-semibold text-sm text-gray-800">{surah.name}</p>
-                          <p className="text-xs text-gray-500">{surah.ayahs} ayahs</p>
+                        <div className="flex items-center gap-3">
+                          <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-emerald-100 px-2 text-[11px] font-bold text-emerald-700">
+                            {surah.number}
+                          </span>
+                          <div>
+                            <p className="font-semibold text-sm text-emerald-900">{surah.name}</p>
+                            <p className="text-xs text-emerald-600">{surah.ayahs} ayahs</p>
+                          </div>
                         </div>
                         {selectedSurah?.number === surah.number && <Check className="w-4 h-4 text-emerald-600" />}
-                      </motion.button>
+                      </Motion.button>
                     ))}
                   </div>
 
                   {selectedSurah && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t pt-4 space-y-3">
+                    <Motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t pt-4 space-y-3">
                       <div>
                         <label className="text-sm font-medium text-gray-700">Ayahs read in {selectedSurah.name}</label>
                         <div className="flex gap-2 mt-1">
@@ -250,17 +256,17 @@ export default function Quran() {
 
                       <AnimatePresence>
                         {justLogged ? (
-                          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2 rounded-xl bg-emerald-100 px-4 py-3 text-emerald-800">
+                          <Motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2 rounded-xl bg-emerald-100 px-4 py-3 text-emerald-800">
                             <Check className="w-5 h-5 text-emerald-600" />
                             <p className="font-medium text-sm">Logged! +{manualAyahs} ayahs. Keep going! 📖</p>
-                          </motion.div>
+                          </Motion.div>
                         ) : (
                           <Button onClick={handleLog} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
                             Log {manualAyahs} Ayahs of {selectedSurah.name}
                           </Button>
                         )}
                       </AnimatePresence>
-                    </motion.div>
+                    </Motion.div>
                   )}
                 </CardContent>
               </Card>
@@ -289,7 +295,7 @@ export default function Quran() {
                   </CardContent>
                 </Card>
               )}
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
       </div>

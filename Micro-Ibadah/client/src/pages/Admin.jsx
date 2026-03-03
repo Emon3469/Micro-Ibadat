@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { Settings, Save, Radio, Clock, Users, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -30,7 +30,7 @@ export default function Admin() {
         setLeaderboard(lb);
       })
       .finally(() => setLoading(false));
-  }, [user]);
+  }, [navigate, user]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -64,7 +64,7 @@ export default function Admin() {
     <div className="min-h-screen bg-linear-to-br from-slate-100 via-white to-gray-100 py-6 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+        <Motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-xl bg-slate-200">
               <Settings className="w-6 h-6 text-slate-700" />
@@ -75,7 +75,7 @@ export default function Admin() {
             </div>
             <Badge className="ml-auto bg-slate-700 text-white">Admin Only</Badge>
           </div>
-        </motion.div>
+        </Motion.div>
 
         {/* Salah Times */}
         <Card className="border-slate-200">
@@ -166,9 +166,9 @@ export default function Admin() {
         <div className="pb-4">
           <AnimatePresence>
             {saved && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mb-3 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 font-medium">
+              <Motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mb-3 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 font-medium">
                 ✅ Settings saved successfully!
-              </motion.div>
+              </Motion.div>
             )}
           </AnimatePresence>
           <Button onClick={handleSave} disabled={saving} className="w-full bg-slate-800 hover:bg-slate-700 text-white">

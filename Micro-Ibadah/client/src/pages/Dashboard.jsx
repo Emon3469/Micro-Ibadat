@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion as Motion } from "framer-motion";
 import { BellRing, BookOpenText, Clock3, Flame, Trophy, Fingerprint, LifeBuoy, Bot, Map, Sparkles } from "lucide-react";
-import { createStudent, fetchDashboard, fetchDuas, fetchLeaderboard, fetchQuranPlan, saveRoutine, submitCheckIn, updateTasbih, saveReflection, logTaraweeh, executeCatchUp, logShawwal, fetchAdminSettings, fetchEidCard, generateEidCard } from "../services/api";
+import { createStudent, fetchDashboard, fetchLeaderboard, fetchQuranPlan, saveRoutine, submitCheckIn, saveReflection, logTaraweeh, executeCatchUp, logShawwal, fetchAdminSettings, fetchEidCard, generateEidCard } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -85,12 +85,11 @@ function SuhoorIftarCard({ salahTimes }) {
   const now = new Date();
   const currentHour = now.getHours();
   const isSuhoorTime = currentHour < 5 || currentHour >= 23;
-  const activeLabel = isSuhoorTime ? "suhoor" : "iftar";
   const activeCountdown = isSuhoorTime ? suhoorCountdown : iftarCountdown;
   const activeEmoji = isSuhoorTime ? "🌙" : "🌅";
 
   return (
-    <motion.div whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+    <Motion.div whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
       <Card className="border-amber-200 bg-linear-to-r from-amber-50 to-orange-50 shadow-sm">
         <CardContent className="pt-4">
           <div className="flex items-center justify-between">
@@ -110,7 +109,7 @@ function SuhoorIftarCard({ salahTimes }) {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </Motion.div>
   );
 }
 
@@ -127,10 +126,10 @@ function EidCard({ user, card }) {
     }
   };
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
+    <Motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
       <Card className="border-yellow-300 shadow-lg overflow-hidden" style={{ background: "linear-gradient(135deg, #1a0533 0%, #2d1066 50%, #1a0533 100%)" }}>
         <CardContent className="pt-6 pb-6 text-center">
-          <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ repeat: Infinity, duration: 3 }} className="text-5xl mb-3">🌙</motion.div>
+          <Motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ repeat: Infinity, duration: 3 }} className="text-5xl mb-3">🌙</Motion.div>
           <p className="text-yellow-300 text-xs font-semibold uppercase tracking-widest mb-1">Eid Mubarak</p>
           <h2 className="text-2xl font-black text-white mb-1">{card?.name || user?.name || user?.nickname}</h2>
           <p className="text-yellow-200 text-sm mb-3">Completed 30 Days of Micro-Ibadah</p>
@@ -150,7 +149,7 @@ function EidCard({ user, card }) {
           </Button>
         </CardContent>
       </Card>
-    </motion.div>
+    </Motion.div>
   );
 }
 
@@ -169,7 +168,7 @@ function RamadanVerseCard({ card }) {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.45 }}>
+    <Motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.45 }}>
       <Card className="border-indigo-300 shadow-lg overflow-hidden" style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #0f172a 100%)" }}>
         <CardContent className="pt-6 pb-6 text-center">
           <p className="text-indigo-200 text-xs font-semibold uppercase tracking-widest mb-2">Ramadan Verse Card</p>
@@ -184,7 +183,7 @@ function RamadanVerseCard({ card }) {
           </Button>
         </CardContent>
       </Card>
-    </motion.div>
+    </Motion.div>
   );
 }
 
@@ -201,7 +200,6 @@ export default function Dashboard() {
   const [slots, setSlots] = useState(routineTemplate);
   const [quranInput, setQuranInput] = useState({ ayahsPerRead: 10, timesPerDay: 3 });
   const [quranPlan, setQuranPlan] = useState(null);
-  const [duas, setDuas] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -228,10 +226,9 @@ export default function Dashboard() {
   useEffect(() => {
     const loadStatic = async () => {
       try {
-        const [duaRes, leaderboardRes, adminRes] = await Promise.all([
-          fetchDuas(), fetchLeaderboard(), fetchAdminSettings()
+        const [leaderboardRes, adminRes] = await Promise.all([
+          fetchLeaderboard(), fetchAdminSettings()
         ]);
-        setDuas(duaRes);
         setLeaderboard(leaderboardRes);
         if (adminRes) setAdminSettings(adminRes);
       } catch (err) {
@@ -303,7 +300,8 @@ export default function Dashboard() {
         setEidGenerating(true);
         const generated = await generateEidCard(currentUserId);
         setEidCardData(generated.card);
-      } catch {
+      } catch (error) {
+        console.error("Eid card auto-generation failed:", error);
       } finally {
         setEidGenerating(false);
       }
@@ -318,7 +316,8 @@ export default function Dashboard() {
       setEidGenerating(true);
       const generated = await generateEidCard(currentUserId);
       setEidCardData(generated.card);
-    } catch {
+    } catch (error) {
+      console.error("Eid card generation failed:", error);
     } finally {
       setEidGenerating(false);
     }
@@ -427,16 +426,16 @@ export default function Dashboard() {
     <div className={`${themeStyles} mx-auto w-full px-4 py-6 sm:px-6 lg:px-8`}>
       <div className="max-w-7xl mx-auto">
       {globalError && (
-        <motion.div 
+        <Motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="mb-4 rounded-xl bg-red-50 p-4 border border-red-200 flex items-center justify-between"
         >
           <p className="text-sm text-red-800">⚠️ {globalError}</p>
           <button onClick={() => setGlobalError(null)} className="text-xs font-bold text-red-900 border border-red-200 px-3 py-1 rounded-lg hover:bg-red-100">Dismiss</button>
-        </motion.div>
+        </Motion.div>
       )}
-      <motion.header
+      <Motion.header
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
@@ -461,7 +460,7 @@ export default function Dashboard() {
                   <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isLast10Nights ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
               </div>
-              <motion.div 
+              <Motion.div 
                  key={dashboard?.user?.hasanatPoints}
                  initial={{ scale: 1.2, color: "#f59e0b" }}
                  animate={{ scale: 1, color: "#92400e" }}
@@ -473,15 +472,15 @@ export default function Dashboard() {
                 <span className={`flex items-center gap-1 text-2xl font-black ${isNightTheme ? "text-amber-300" : "text-amber-600"}`}>
                   ⭐ {dashboard?.user?.hasanatPoints || 0}
                 </span>
-              </motion.div>
+              </Motion.div>
             </div>
           )}
         </div>
-      </motion.header>
+      </Motion.header>
 
       {/* Admin Broadcast Banner */}
       {adminSettings?.broadcastMessage && (
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           className="mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4 shadow-sm flex items-center gap-3"
@@ -493,12 +492,12 @@ export default function Dashboard() {
             <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-0.5">Announcement</p>
             <p className="text-sm text-amber-900 font-medium">{adminSettings.broadcastMessage}</p>
           </div>
-        </motion.div>
+        </Motion.div>
       )}
 
       {/* Laylatul Qadr Pinned Content */}
       {isLast10Nights && (
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 rounded-2xl border border-indigo-500/30 bg-indigo-900/60 p-5 shadow-lg backdrop-blur text-indigo-100"
@@ -520,7 +519,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 text-sm"><div className="w-1.5 h-1.5 rounded-full bg-yellow-400" /> Make dua for others</div>
             </div>
           </div>
-        </motion.div>
+        </Motion.div>
       )}
 
       {/* Automated Eid Card (Day 31 or if Day 30 complete) */}
@@ -532,7 +531,7 @@ export default function Dashboard() {
 
       <main className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="space-y-4 lg:col-span-2">
-          <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+          <Motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
           <Card className="border-base-300 bg-base-100/95">
             <CardHeader>
               <CardTitle>1) Student Onboarding</CardTitle>
@@ -549,9 +548,9 @@ export default function Dashboard() {
               </Button>
             </CardContent>
           </Card>
-          </motion.div>
+          </Motion.div>
 
-          <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+          <Motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
           <Card className="border-base-300 bg-base-100/95">
             <CardHeader>
               <CardTitle>2) Daily Routine System</CardTitle>
@@ -559,7 +558,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="space-y-3">
               {slots.map((slot, index) => (
-                <motion.div layout key={`${slot.start}-${index}`} className="grid grid-cols-2 gap-2 rounded-xl border border-base-300 bg-base-200/60 p-3 sm:grid-cols-5" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }}>
+                <Motion.div layout key={`${slot.start}-${index}`} className="grid grid-cols-2 gap-2 rounded-xl border border-base-300 bg-base-200/60 p-3 sm:grid-cols-5" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }}>
                   <Input value={slot.start} onChange={(event) => setSlots((prev) => prev.map((item, itemIndex) => (itemIndex === index ? { ...item, start: event.target.value } : item)))} />
                   <Input value={slot.end} onChange={(event) => setSlots((prev) => prev.map((item, itemIndex) => (itemIndex === index ? { ...item, end: event.target.value } : item)))} />
                   <select className="rounded-md border border-base-300 bg-base-100 px-3 py-2 text-sm" value={slot.type} onChange={(event) => setSlots((prev) => prev.map((item, itemIndex) => (itemIndex === index ? { ...item, type: event.target.value } : item)))}>
@@ -577,7 +576,7 @@ export default function Dashboard() {
                     <option value={5}>5m</option>
                     <option value={10}>10m</option>
                   </select>
-                </motion.div>
+                </Motion.div>
               ))}
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Button variant="secondary" onClick={() => setSlots((prev) => [...prev, { start: "", end: "", type: "free", activity: "dua", durationMinutes: 5 }])}>Add Slot</Button>
@@ -585,9 +584,9 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          </motion.div>
+          </Motion.div>
 
-          <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+          <Motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
           <Card className="border-base-300 bg-base-100/95">
             <CardHeader>
               <CardTitle>3) Qur'an Reading Calculator</CardTitle>
@@ -606,7 +605,7 @@ export default function Dashboard() {
               </div>
               <AnimatePresence>
                 {quranPlan ? (
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
@@ -615,17 +614,17 @@ export default function Dashboard() {
                     <p className="text-sm text-emerald-800">Total ayahs/day: <strong>{quranPlan.totalAyahsPerDay}</strong></p>
                     <p className="text-sm text-emerald-800">Days to completion: <strong>{quranPlan.daysToCompletion}</strong></p>
                     <p className="mt-1 text-xs text-emerald-700">{quranPlan.paceText}</p>
-                    <motion.div initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 0.45 }}>
+                    <Motion.div initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 0.45 }}>
                       <Progress value={quranProgress} className="mt-3" />
-                    </motion.div>
-                  </motion.div>
+                    </Motion.div>
+                  </Motion.div>
                 ) : null}
               </AnimatePresence>
             </CardContent>
           </Card>
-          </motion.div>
+          </Motion.div>
 
-          <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+          <Motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
           {currentRamadanDay <= 30 ? (
             <Card className="border-indigo-200 bg-indigo-50/90 shadow-sm mt-4">
               <CardHeader className="pb-2">
@@ -737,7 +736,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           )}
-          </motion.div>
+          </Motion.div>
 
           <GroupCircle 
             currentUser={currentUser} 
@@ -754,7 +753,7 @@ export default function Dashboard() {
           
           <AnimatePresence>
             {dashboard?.user?.lastMissedDate && dashboard?.user?.streakDays < 3 && (
-              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+              <Motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
                 <Card className="border-rose-200 bg-rose-50/90 shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-2 opacity-10"><LifeBuoy className="h-16 w-16 text-rose-600" /></div>
                   <CardHeader className="pb-2">
@@ -766,12 +765,12 @@ export default function Dashboard() {
                     <Button onClick={handleCatchUp} className="w-full bg-rose-600 hover:bg-rose-700 text-white shadow-sm">Execute Soft Recovery</Button>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </Motion.div>
             )}
           </AnimatePresence>
 
 
-          <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+          <Motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
           <Card className="border-base-300 bg-base-100/95">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Clock3 className="h-4 w-4" /> Today's Snapshot</CardTitle>
@@ -818,10 +817,10 @@ export default function Dashboard() {
               <Button className="w-full mt-2" onClick={handleCheckIn} disabled={!currentUserId}>Mark Today Complete</Button>
             </CardContent>
           </Card>
-          </motion.div>
+          </Motion.div>
 
 
-          <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+          <Motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
           <Card className="border-base-300 bg-base-100/95">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Trophy className="h-4 w-4" /> Leaderboard</CardTitle>
@@ -829,7 +828,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="space-y-2">
               {leaderboard.slice(0, 6).map((item) => (
-                <motion.div key={item.userId} className="flex items-center justify-between rounded-lg border border-base-300 px-3 py-2 text-sm" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}>
+                <Motion.div key={item.userId} className="flex items-center justify-between rounded-lg border border-base-300 px-3 py-2 text-sm" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}>
                   <div>
                     <p className="font-medium text-base-content">#{item.rank} {item.name}</p>
                     <p className="text-xs text-base-content/70">{item.department}</p>
@@ -838,13 +837,13 @@ export default function Dashboard() {
                     <p className="font-semibold text-base-content">{item.consistencyScore}</p>
                     <p className="text-xs text-base-content/70">{item.streakDays}d streak</p>
                   </div>
-                </motion.div>
+                </Motion.div>
               ))}
             </CardContent>
           </Card>
-          </motion.div>
+          </Motion.div>
 
-          <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
+          <Motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
           <Card className="border-base-300 bg-base-100/95 shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2"><BookOpenText className="h-4 w-4 text-primary" /> Nightly Reflection</CardTitle>
@@ -854,7 +853,7 @@ export default function Dashboard() {
               
               <AnimatePresence mode="wait">
                 {reflectionSaved ? (
-                  <motion.div 
+                  <Motion.div 
                     key="saved"
                     initial={{ opacity: 0, scale: 0.95 }} 
                     animate={{ opacity: 1, scale: 1 }} 
@@ -862,9 +861,9 @@ export default function Dashboard() {
                   >
                     <BookOpenText className="mb-2 h-6 w-6 text-emerald-600" />
                     <p className="text-sm font-medium text-emerald-800">Saved to diary!</p>
-                  </motion.div>
+                  </Motion.div>
                 ) : (
-                  <motion.div key="input" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-2">
+                  <Motion.div key="input" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-2">
                     <textarea 
                       className="w-full resize-none rounded-lg border border-base-300 bg-base-100 p-3 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                       rows={3}
@@ -873,7 +872,7 @@ export default function Dashboard() {
                       onChange={(e) => setReflectionText(e.target.value)}
                     />
                     <Button className="w-full" size="sm" onClick={handleSaveReflection} disabled={!currentUserId || !reflectionText.trim()}>Save Reflection</Button>
-                  </motion.div>
+                  </Motion.div>
                 )}
               </AnimatePresence>
 
@@ -882,7 +881,7 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          </motion.div>
+          </Motion.div>
         </aside>
       </main>
       </div>

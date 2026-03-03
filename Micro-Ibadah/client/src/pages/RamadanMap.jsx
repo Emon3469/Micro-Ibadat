@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { fetchDashboard } from "../services/api";
 
@@ -31,7 +31,6 @@ export default function RamadanMap() {
   const { user } = useAuth();
   const [dashData, setDashData] = useState(null);
   const [selectedDay, setSelectedDay] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [isQadrMode, setIsQadrMode] = useState(() => (localStorage.getItem("app_theme") || "ramadan") === "ramadan-night");
 
   useEffect(() => {
@@ -50,10 +49,10 @@ export default function RamadanMap() {
   }, []);
 
   useEffect(() => {
-    if (!user?._id) { setLoading(false); return; }
+    if (!user?._id) return;
     fetchDashboard(user._id).then(d => {
       setDashData(d);
-    }).finally(() => setLoading(false));
+    });
   }, [user]);
 
   const userData = dashData?.user;
@@ -78,7 +77,7 @@ export default function RamadanMap() {
     <div className={`${bgClass} py-6 px-4 transition-colors duration-700`}>
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+        <Motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center justify-between">
             <div>
               <h1 className={`text-2xl font-bold ${isQadrMode ? "text-indigo-100" : "text-indigo-900"}`}>
@@ -102,7 +101,7 @@ export default function RamadanMap() {
 
           {/* Laylatul Qadr pinned banner */}
           {isQadrMode && (
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               className="mt-4 rounded-2xl border border-indigo-500/40 bg-indigo-900/60 p-4 backdrop-blur"
@@ -118,9 +117,9 @@ export default function RamadanMap() {
                   </span>
                 ))}
               </div>
-            </motion.div>
+            </Motion.div>
           )}
-        </motion.div>
+        </Motion.div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
@@ -156,13 +155,13 @@ export default function RamadanMap() {
 
           <div className="grid grid-cols-10 gap-1.5 sm:grid-cols-15">
             {DAY_LABELS.map(day => {
-              const { level, label } = getDayData(userData, day);
+              const { level } = getDayData(userData, day);
               const isQadr = IS_LAYLATUL_QADR(day);
               const isLast10 = IS_LAST_10(day);
               const colorClass = INTENSITY_COLORS[level];
 
               return (
-                <motion.button
+                <Motion.button
                   key={day}
                   whileHover={{ scale: 1.15 }}
                   whileTap={{ scale: 0.95 }}
@@ -177,14 +176,14 @@ export default function RamadanMap() {
                     {day}
                   </span>
                   {isQadr && <span className="absolute -top-1 -right-1 text-[8px]">⭐</span>}
-                </motion.button>
+                </Motion.button>
               );
             })}
           </div>
 
           {/* Selected day info */}
           {selectedDay && (
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               className={`mt-4 rounded-xl p-3 text-sm ${
@@ -196,7 +195,7 @@ export default function RamadanMap() {
               {IS_LAYLATUL_QADR(selectedDay) && (
                 <p className="text-xs mt-1 text-yellow-600 font-medium">Potential Laylatul Qadr — worth 1,000 months of worship!</p>
               )}
-            </motion.div>
+            </Motion.div>
           )}
         </div>
 

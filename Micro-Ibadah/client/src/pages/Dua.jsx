@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion as Motion } from "framer-motion";
 import { BookOpenText, BellRing, Bookmark, Search, Send, Heart } from "lucide-react";
 import { fetchDuas, fetchDuaBoard, postDuaBoard, sayAmeen } from "../services/api";
 import { Button } from "../components/ui/button";
@@ -96,7 +96,7 @@ function CommunityDuaBoard({ userId }) {
         ) : (
           <div className="space-y-2">
             {posts.map(post => (
-              <motion.div key={post._id} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+              <Motion.div key={post._id} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
                 className="rounded-xl bg-white border border-indigo-100 p-3 shadow-sm">
                 <div className="flex items-start gap-2">
                   <div className="flex-1">
@@ -119,7 +119,7 @@ function CommunityDuaBoard({ userId }) {
                     <span className="text-[10px] font-bold">{post.ameen}</span>
                   </button>
                 </div>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         )}
@@ -188,8 +188,10 @@ export default function Dua() {
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           {emotionCategories.map(cat => (
-            <Button key={cat} variant={selectedEmotion === cat ? "default" : "outline"}
-              className={`shrink-0 rounded-full ${selectedEmotion === cat ? "shadow-md" : "bg-white text-slate-600 border-slate-200"}`}
+            <Button key={cat} variant="outline"
+              className={`shrink-0 rounded-full font-semibold transition-all ${selectedEmotion === cat
+                ? "bg-primary text-primary-content border-primary shadow-md hover:bg-primary/90"
+                : "bg-base-100 text-base-content/80 border-base-300 hover:border-primary/40 hover:text-primary hover:bg-primary/5"}`}
               onClick={() => setSelectedEmotion(cat)}>
               {cat}
             </Button>
@@ -203,7 +205,7 @@ export default function Dua() {
         <AnimatePresence mode="popLayout">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredDuas.map((dua) => (
-              <motion.div key={dua.id} layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2 }}>
+              <Motion.div key={dua.id} layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2 }}>
                 <Card className="h-full border-slate-200 bg-white hover:shadow-md transition-shadow">
                   <CardHeader className="pb-2 flex flex-row items-start justify-between">
                     <div>
@@ -223,13 +225,13 @@ export default function Dua() {
                     {dua.reference ? <p className="text-xs text-slate-400 text-right">{dua.reference}</p> : null}
                   </CardContent>
                 </Card>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
           {filteredDuas.length === 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12 text-slate-500 bg-slate-50 rounded-2xl border border-slate-200 border-dashed">
+            <Motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12 text-slate-500 bg-slate-50 rounded-2xl border border-slate-200 border-dashed">
               No duas matched your search.
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
       )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Users, UserPlus, Copy, Trophy, Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
@@ -19,11 +19,23 @@ export default function GroupCircle({ currentUser, onGroupJoined }) {
   const [loading, setLoading] = useState(false);
 
   // Load existing groups
+  const loadGroups = useCallback(async () => {
+    try {
+      const uGroups = await fetchUserGroups(currentUserId);
+      setGroups(uGroups || []);
+      if (uGroups && uGroups.length > 0 && !activeGroup) {
+        setActiveGroup(uGroups[0]);
+      }
+    } catch {
+      console.error("Failed to load groups");
+    }
+  }, [activeGroup, currentUserId]);
+
   useEffect(() => {
     if (currentUserId) {
       loadGroups();
     }
-  }, [currentUserId]);
+  }, [currentUserId, loadGroups]);
 
   // Load specific group details when active group changes
   useEffect(() => {
@@ -32,23 +44,11 @@ export default function GroupCircle({ currentUser, onGroupJoined }) {
     }
   }, [activeGroup]);
 
-  const loadGroups = async () => {
-    try {
-      const uGroups = await fetchUserGroups(currentUserId);
-      setGroups(uGroups || []);
-      if (uGroups && uGroups.length > 0 && !activeGroup) {
-        setActiveGroup(uGroups[0]);
-      }
-    } catch (err) {
-      console.error("Failed to load groups");
-    }
-  };
-
   const loadGroupDetails = async (groupId) => {
     try {
       const details = await fetchGroupDetails(groupId);
       setActiveGroupDetails(details);
-    } catch (err) {
+    } catch {
       console.error("Failed to load group details");
     }
   };
@@ -64,7 +64,7 @@ export default function GroupCircle({ currentUser, onGroupJoined }) {
       setIsCreating(false);
       setGroupName("");
       if (onGroupJoined) onGroupJoined();
-    } catch (err) {
+    } catch {
       alert("Failed to create group");
     } finally {
       setLoading(false);
@@ -85,7 +85,7 @@ export default function GroupCircle({ currentUser, onGroupJoined }) {
       setIsJoining(false);
       setInviteCode("");
       if (onGroupJoined) onGroupJoined();
-    } catch (err) {
+    } catch {
       alert("Invalid invite code or already joined");
     } finally {
       setLoading(false);

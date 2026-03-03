@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { User, Trophy, Star, Zap, Settings, LogOut, ChevronRight, Shield } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -74,7 +74,7 @@ export default function Profile() {
     <div className={`min-h-screen bg-linear-to-br from-violet-50 via-white to-purple-50 py-6 px-4`}>
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Profile Hero */}
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <Motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
           <div className={`rounded-2xl bg-linear-to-r ${gradientClass} p-6 text-white shadow-lg`}>
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl font-black shadow-inner">
@@ -100,7 +100,7 @@ export default function Profile() {
                   {rpg.nextLevel && <span>{rpg.nextLevel.level}</span>}
                 </div>
                 <div className="w-full bg-white/20 rounded-full h-2.5 overflow-hidden">
-                  <motion.div
+                  <Motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${rpg.progressPct}%` }}
                     transition={{ duration: 1, ease: "easeOut" }}
@@ -110,7 +110,7 @@ export default function Profile() {
               </div>
             )}
           </div>
-        </motion.div>
+        </Motion.div>
 
         {/* Quick stats row */}
         <div className="grid grid-cols-3 gap-3">
@@ -144,7 +144,7 @@ export default function Profile() {
 
         <AnimatePresence mode="wait">
           {activeTab === "stats" && (
-            <motion.div key="stats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+            <Motion.div key="stats" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
               {/* RPG Level Map */}
               <Card className="border-purple-200">
                 <CardHeader>
@@ -182,11 +182,11 @@ export default function Profile() {
                   </CardContent>
                 </Card>
               )}
-            </motion.div>
+            </Motion.div>
           )}
 
           {activeTab === "badges" && (
-            <motion.div key="badges" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <Motion.div key="badges" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <Card className="border-purple-200">
                 <CardHeader>
                   <CardTitle className="text-purple-800">🏅 Rare Badges</CardTitle>
@@ -198,7 +198,7 @@ export default function Profile() {
                       const isEarned = earnedBadges.includes(badge.id);
                       const meta = BADGE_META[badge.id] || {};
                       return (
-                        <motion.div
+                        <Motion.div
                           key={badge.id}
                           whileHover={isEarned ? { scale: 1.01 } : {}}
                           className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-all ${
@@ -214,17 +214,17 @@ export default function Profile() {
                             <p className="text-xs font-bold text-purple-700">+{badge.xp} XP</p>
                             {isEarned && <p className="text-xs text-green-600">Earned ✓</p>}
                           </div>
-                        </motion.div>
+                        </Motion.div>
                       );
                     })}
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </Motion.div>
           )}
 
           {activeTab === "settings" && (
-            <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+            <Motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
               {/* Salah Times from Admin */}
               {settings?.salahTimes && (
                 <Card className="border-purple-200">
@@ -270,7 +270,7 @@ export default function Profile() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
       </div>

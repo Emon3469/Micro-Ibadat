@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { Fingerprint, RotateCcw, Smartphone } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { updateTasbih } from "../services/api";
@@ -8,6 +8,7 @@ import { Button } from "../components/ui/button";
 
 const SHAKE_THRESHOLD = 15;
 const SHAKE_COOLDOWN = 350;
+const DHIKR_SUGGESTIONS = ["SubhanAllah", "Alhamdulillah", "Allahu Akbar", "Astaghfirullah", "La ilaha illallah"];
 
 export default function Dhikr() {
   const { user, setUser } = useAuth();
@@ -19,8 +20,7 @@ export default function Dhikr() {
   const [justShook, setJustShook] = useState(false);
   const sessionCountRef = useRef(sessionCount);
 
-  const dhikrSuggestions = ["SubhanAllah", "Alhamdulillah", "Allahu Akbar", "Astaghfirullah", "La ilaha illallah"];
-  const [currentDhikr, setCurrentDhikr] = useState(dhikrSuggestions[0]);
+  const [currentDhikr, setCurrentDhikr] = useState(DHIKR_SUGGESTIONS[0]);
 
   useEffect(() => { sessionCountRef.current = sessionCount; }, [sessionCount]);
 
@@ -33,15 +33,15 @@ export default function Dhikr() {
       setSessionCount(0);
       sessionCountRef.current = 0;
       setCurrentDhikr(prev => {
-        const idx = dhikrSuggestions.indexOf(prev);
-        return dhikrSuggestions[(idx + 1) % dhikrSuggestions.length];
+        const idx = DHIKR_SUGGESTIONS.indexOf(prev);
+        return DHIKR_SUGGESTIONS[(idx + 1) % DHIKR_SUGGESTIONS.length];
       });
     } catch (error) {
       console.error("Failed to save dhikr", error);
     } finally {
       setIsSaving(false);
     }
-  }, [user, isSaving]);
+  }, [isSaving, setUser, user]);
 
   const increment = useCallback(() => {
     setSessionCount(prev => {
@@ -97,7 +97,7 @@ export default function Dhikr() {
   return (
     <div className="max-w-md mx-auto py-8 px-4">
       <Card className={`border-emerald-200 shadow-lg relative overflow-hidden transition-colors duration-200 ${justShook ? "bg-emerald-100" : "bg-emerald-50"}`}>
-        <motion.div key={sessionCount} initial={{ scale: 0.8, opacity: 0.2 }} animate={{ scale: 2, opacity: 0 }} transition={{ duration: 0.5 }}
+        <Motion.div key={sessionCount} initial={{ scale: 0.8, opacity: 0.2 }} animate={{ scale: 2, opacity: 0 }} transition={{ duration: 0.5 }}
           className="absolute inset-0 bg-emerald-400 rounded-full pointer-events-none origin-center m-auto w-32 h-32" />
 
         <CardHeader className="text-center pb-2 relative z-10">
@@ -119,10 +119,10 @@ export default function Dhikr() {
                 strokeDashoffset={`${2 * Math.PI * 90 * (1 - ringProgress / 100)}`}
                 strokeLinecap="round" className="transition-all duration-200" />
             </svg>
-            <motion.button whileTap={{ scale: 0.92 }} onClick={handleTap}
+            <Motion.button whileTap={{ scale: 0.92 }} onClick={handleTap}
               className="absolute inset-0 flex items-center justify-center rounded-full bg-linear-to-br from-emerald-400 to-emerald-600 text-6xl font-black text-white shadow-2xl focus:outline-none">
               {sessionCount}
-            </motion.button>
+            </Motion.button>
           </div>
 
           {/* Shake toggle */}
@@ -131,12 +131,14 @@ export default function Dhikr() {
             <span className="text-sm text-emerald-700 font-medium flex-1">Shake to Count</span>
             <AnimatePresence>
               {justShook && (
-                <motion.span initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="text-xs text-emerald-600 font-bold">Shake! 📿</motion.span>
+                <Motion.span initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="text-xs text-emerald-600 font-bold">Shake! 📿</Motion.span>
               )}
             </AnimatePresence>
             <button
               onClick={() => shakeEnabled ? setShakeEnabled(false) : enableShake()}
-              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${shakeEnabled ? "bg-emerald-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-emerald-50 hover:text-emerald-700"}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${shakeEnabled
+                ? "bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-300"
+                : "bg-white text-emerald-700 border border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300"}`}
             >
               {shakePermission === "denied" ? "Denied" : shakeEnabled ? "ON" : "Enable"}
             </button>

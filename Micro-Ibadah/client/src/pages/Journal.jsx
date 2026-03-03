@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { BookHeart, Send, Smile, Meh, Frown, Sparkles, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -15,12 +15,13 @@ const MOODS = [
 ];
 
 function MoodButton({ mood, selected, onClick }) {
-  const Icon = mood.icon;
   return (
     <button
       onClick={() => onClick(mood.id)}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
-        selected === mood.id ? mood.color + " ring-1 ring-current" : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
+      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
+        selected === mood.id
+          ? mood.color + " ring-2 ring-current shadow-sm scale-[1.02]"
+          : "bg-white border-gray-200 text-gray-700 hover:border-amber-300 hover:bg-amber-50/50"
       }`}
     >
       {mood.label}
@@ -85,7 +86,7 @@ export default function Journal() {
     <div className="min-h-screen bg-linear-to-br from-amber-50 via-white to-orange-50 py-6 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+        <Motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-amber-100">
               <BookHeart className="w-6 h-6 text-amber-700" />
@@ -95,10 +96,10 @@ export default function Journal() {
               <p className="text-sm text-amber-600">Rotating AI-inspired reflections · Night {ramadanDay}</p>
             </div>
           </div>
-        </motion.div>
+        </Motion.div>
 
         {/* Tonight's Prompt */}
-        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
+        <Motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
           <Card className="border-amber-300 bg-linear-to-br from-amber-50 to-orange-50 shadow-sm">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -115,7 +116,7 @@ export default function Journal() {
             </CardHeader>
             <CardContent>
               <AnimatePresence mode="wait">
-                <motion.p
+                <Motion.p
                   key={prompt}
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -123,11 +124,11 @@ export default function Journal() {
                   className="text-amber-900 font-medium text-base leading-relaxed"
                 >
                   "{prompt}"
-                </motion.p>
+                </Motion.p>
               </AnimatePresence>
             </CardContent>
           </Card>
-        </motion.div>
+        </Motion.div>
 
         {/* Write Entry */}
         <Card className="border-amber-200">
@@ -158,18 +159,18 @@ export default function Journal() {
 
             <AnimatePresence mode="wait">
               {saved ? (
-                <motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-emerald-800">
+                <Motion.div key="saved" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-emerald-800">
                   <BookHeart className="w-4 h-4" />
                   <p className="text-sm font-medium">Saved to your journal! +20 Hasanat ⭐</p>
-                </motion.div>
+                </Motion.div>
               ) : (
                 <Button
                   key="btn"
                   onClick={handleSave}
                   disabled={!text.trim() || saving || !user?._id}
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                  className="w-full bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-sm"
                 >
-                  {saving ? "Saving..." : <><Send className="w-4 h-4 mr-2" /> Save Tonight's Entry</>}
+                  {saving ? "Saving..." : <><Send className="w-4 h-4 mr-2" /> Send Tonight's Entry</>}
                 </Button>
               )}
             </AnimatePresence>
@@ -189,7 +190,7 @@ export default function Journal() {
 
             <AnimatePresence>
               {showEntries && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                <Motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                   <div className="space-y-3 mt-3">
                     {entries.slice(0, 10).map((entry, i) => (
                       <div key={i} className="rounded-xl bg-white border border-amber-100 p-4 shadow-sm">
@@ -202,7 +203,7 @@ export default function Journal() {
                       </div>
                     ))}
                   </div>
-                </motion.div>
+                </Motion.div>
               )}
             </AnimatePresence>
           </div>

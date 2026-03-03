@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { Send, Bot, User, Lightbulb, RefreshCw } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { sendAiCoachMessage, fetchAdaptiveRoutine } from "../services/api";
@@ -96,7 +96,7 @@ export default function AiCoach() {
         {/* Adaptive Routine panel */}
         <AnimatePresence>
           {showAdaptive && adaptive?.suggestions && (
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
@@ -111,7 +111,7 @@ export default function AiCoach() {
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
       </div>
@@ -120,7 +120,7 @@ export default function AiCoach() {
       <div className="flex-1 overflow-y-auto px-4 py-2">
         <div className="max-w-2xl mx-auto space-y-4">
           {messages.map((msg, i) => (
-            <motion.div
+            <Motion.div
               key={i}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -148,23 +148,23 @@ export default function AiCoach() {
                   <p className="text-xs text-indigo-400 px-2">{msg.suggestion}</p>
                 )}
               </div>
-            </motion.div>
+            </Motion.div>
           ))}
 
           {loading && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
+            <Motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
               <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center">
                 <Bot className="w-4 h-4 text-indigo-300" />
               </div>
               <div className="bg-slate-800/80 border border-slate-700 rounded-2xl px-4 py-3">
                 <div className="flex gap-1 items-center">
                   {[0, 1, 2].map(i => (
-                    <motion.div key={i} animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, delay: i * 0.15, duration: 0.5 }}
+                    <Motion.div key={i} animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, delay: i * 0.15, duration: 0.5 }}
                       className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
                   ))}
                 </div>
               </div>
-            </motion.div>
+            </Motion.div>
           )}
           <div ref={bottomRef} />
         </div>
