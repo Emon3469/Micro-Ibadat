@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: micro-ibadah-api
+    runtime: docker
+    dockerContext: server
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - fromDatabase:
+          name: ibadah-db
+          property: connectionString
+        key: MONGO_URI
+      - key: CLIENT_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+
+  - type: web
+    name: micro-ibadah-client
+    runtime: docker
+    dockerContext: client
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: VITE_API_URL
+        value: /api

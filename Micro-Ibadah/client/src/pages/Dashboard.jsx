@@ -213,6 +213,7 @@ export default function Dashboard() {
   const [eidCardData, setEidCardData] = useState(null);
   const [eidGenerating, setEidGenerating] = useState(false);
   const [ramadanVerseCard, setRamadanVerseCard] = useState(null);
+  const [globalError, setGlobalError] = useState(null);
   const currentUserId = currentUser?._id || currentUser?.id;
 
   const quranProgress = useMemo(() => {
@@ -226,12 +227,17 @@ export default function Dashboard() {
 
   useEffect(() => {
     const loadStatic = async () => {
-      const [duaRes, leaderboardRes, adminRes] = await Promise.all([
-        fetchDuas(), fetchLeaderboard(), fetchAdminSettings().catch(() => null)
-      ]);
-      setDuas(duaRes);
-      setLeaderboard(leaderboardRes);
-      if (adminRes) setAdminSettings(adminRes);
+      try {
+        const [duaRes, leaderboardRes, adminRes] = await Promise.all([
+          fetchDuas(), fetchLeaderboard(), fetchAdminSettings()
+        ]);
+        setDuas(duaRes);
+        setLeaderboard(leaderboardRes);
+        if (adminRes) setAdminSettings(adminRes);
+      } catch (err) {
+        console.error("Dashboard static load error:", err);
+        setGlobalError("Failed to load some data. Please check your connection.");
+      }
     };
     loadStatic();
   }, []);
@@ -260,7 +266,10 @@ export default function Dashboard() {
     if (!currentUserId) return;
     fetchDashboard(currentUserId)
       .then(setDashboard)
-      .catch(() => null);
+      .catch((err) => {
+        console.error("Dashboard fetch error:", err);
+        setGlobalError("Unable to load personal progress.");
+      });
   }, [currentUserId]);
 
   useEffect(() => {
@@ -417,6 +426,16 @@ export default function Dashboard() {
   return (
     <div className={`${themeStyles} mx-auto w-full px-4 py-6 sm:px-6 lg:px-8`}>
       <div className="max-w-7xl mx-auto">
+      {globalError && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mb-4 rounded-xl bg-red-50 p-4 border border-red-200 flex items-center justify-between"
+        >
+          <p className="text-sm text-red-800">⚠️ {globalError}</p>
+          <button onClick={() => setGlobalError(null)} className="text-xs font-bold text-red-900 border border-red-200 px-3 py-1 rounded-lg hover:bg-red-100">Dismiss</button>
+        </motion.div>
+      )}
       <motion.header
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
