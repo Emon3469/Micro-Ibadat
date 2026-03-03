@@ -206,23 +206,25 @@ export default function Dua() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredDuas.map((dua) => (
               <Motion.div key={dua.id} layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2 }}>
-                <Card className="h-full border-slate-200 bg-white hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-2 flex flex-row items-start justify-between">
+                <Card className="group h-full border border-base-300/80 bg-base-100 hover:border-primary/30 hover:shadow-lg transition-all duration-200">
+                  <CardHeader className="pb-2 flex flex-row items-start justify-between gap-2">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-wider text-primary/70 mb-1">{dua.category}</p>
-                      <CardTitle className="text-lg">{dua.title}</CardTitle>
+                      <p className="inline-flex rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary mb-2">{dua.category}</p>
+                      <CardTitle className="text-lg leading-tight text-base-content group-hover:text-primary transition-colors">{dua.title}</CardTitle>
                     </div>
-                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-full h-8 w-8 -mt-1 -mr-2">
+                    <Button variant="ghost" size="icon" className="text-base-content/40 hover:text-amber-500 hover:bg-amber-50 rounded-full h-8 w-8 -mt-1 -mr-2 transition-colors">
                       <Bookmark className="h-4 w-4" />
                     </Button>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <p className="text-2xl font-medium text-slate-800 text-right leading-loose" dir="rtl">{dua.arabic}</p>
-                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Meaning</p>
-                      <p className="text-sm text-slate-700 leading-relaxed">{dua.meaning}</p>
+                    <div className="rounded-xl border border-primary/10 bg-linear-to-br from-primary/5 to-transparent p-4">
+                      <p className="text-2xl font-medium text-base-content text-right leading-loose" dir="rtl">{dua.arabic}</p>
                     </div>
-                    {dua.reference ? <p className="text-xs text-slate-400 text-right">{dua.reference}</p> : null}
+                    <div className="bg-base-200/60 p-3 rounded-lg border border-base-300/80">
+                      <p className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">Meaning</p>
+                      <p className="text-sm text-base-content/85 leading-relaxed">{dua.meaning}</p>
+                    </div>
+                    {dua.reference ? <p className="text-xs text-base-content/50 text-right">{dua.reference}</p> : null}
                   </CardContent>
                 </Card>
               </Motion.div>
