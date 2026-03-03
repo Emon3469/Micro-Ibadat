@@ -17,12 +17,29 @@ const challengeRoutes = require("./routes/challengeRoutes");
 
 const app = express();
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:4173",
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   })
 );
 app.use(express.json());
+
+app.get("/", (_req, res) => {
+  res.status(200).json({ status: "ok", message: "Micro-Ibadah API is running" });
+});
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", service: "Micro-Ibadah API" });

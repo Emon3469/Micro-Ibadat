@@ -460,6 +460,57 @@ export default function Dashboard() {
         </div>
       </motion.header>
 
+      {/* Admin Broadcast Banner */}
+      {adminSettings?.broadcastMessage && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4 shadow-sm flex items-center gap-3"
+        >
+          <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+            <BellRing className="w-5 h-5 text-amber-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-0.5">Announcement</p>
+            <p className="text-sm text-amber-900 font-medium">{adminSettings.broadcastMessage}</p>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Laylatul Qadr Pinned Content */}
+      {isLast10Nights && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 rounded-2xl border border-indigo-500/30 bg-indigo-900/60 p-5 shadow-lg backdrop-blur text-indigo-100"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <Sparkles className="w-6 h-6 text-yellow-400" />
+            <h2 className="text-lg font-bold">✨ Laylatul Qadr Pinned Content</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-xl bg-white/10 p-4 border border-white/10">
+              <p className="text-xs font-semibold text-indigo-300 uppercase tracking-wider mb-2">Recommended Dua</p>
+              <p className="text-xl font-arabic text-right mb-2" dir="rtl">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي</p>
+              <p className="text-xs text-indigo-200 italic">"O Allah, You are Pardoning and You love to pardon, so pardon me."</p>
+            </div>
+            <div className="rounded-xl bg-white/10 p-4 border border-white/10 space-y-2">
+              <p className="text-xs font-semibold text-indigo-300 uppercase tracking-wider mb-1">Checklist for Tonight</p>
+              <div className="flex items-center gap-2 text-sm"><div className="w-1.5 h-1.5 rounded-full bg-yellow-400" /> Pray Isha in congregation</div>
+              <div className="flex items-center gap-2 text-sm"><div className="w-1.5 h-1.5 rounded-full bg-yellow-400" /> Read at least 5 ayahs</div>
+              <div className="flex items-center gap-2 text-sm"><div className="w-1.5 h-1.5 rounded-full bg-yellow-400" /> Make dua for others</div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Automated Eid Card (Day 31 or if Day 30 complete) */}
+      {(currentRamadanDay === 31 || hasCompletedDay30) && (
+        <div className="mb-6">
+          <EidCard user={currentUser} />
+        </div>
+      )}
+
       <main className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <section className="space-y-4 lg:col-span-2">
           <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 280, damping: 22 }}>
